@@ -27,3 +27,21 @@ class PerceptionLoss(LossFunction):
         """
         diag = np.where(parent.value >= 0.0, 0.0, -1)
         return np.diag(diag.ravel())
+
+class LogLoss(LossFunction):
+    """Logistic loss function"""
+    
+    def compute(self) -> None:
+
+        assert len(self.parents) == 1
+
+        x = self.parents[0].value
+        # prevent overflow
+        self.value = np.log(1 + np.power(np.e, np.where(-x > 1e2, 1e2, -x)))
+
+    def get_jacobi(self, parent) -> None:
+        
+        x = parent.value
+        diag = -1 / (1 + np.power(np.e, np.where(x > 1e2, 1e2, x)))
+
+        return np.diag(diag.ravel())

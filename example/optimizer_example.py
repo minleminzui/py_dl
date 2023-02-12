@@ -54,10 +54,10 @@ learning_rate = 0.01
 
 # use all kinds of optimizers
 # optimizer = py_dl.optimizer.GradientDescent(py_dl.default_graph, loss, learning_rate)
-optimizer = py_dl.optimizer.Momentum(py_dl.default_graph, loss, learning_rate)
+# optimizer = py_dl.optimizer.Momentum(py_dl.default_graph, loss, learning_rate)
 # optimizer = py_dl.optimizer.AdaGrad(py_dl.default_graph, loss, learning_rate)
 # optimizer = py_dl.optimizer.RMSProp(py_dl.default_graph, loss, learning_rate)
-# optimizer = py_dl.optimizer.Adam(py_dl.default_graph, loss, learning_rate)
+optimizer = py_dl.optimizer.Adam(py_dl.default_graph, loss, learning_rate)
 
 mini_batch_size = 8
 cur_batch_size = 0

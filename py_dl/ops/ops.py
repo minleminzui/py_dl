@@ -72,3 +72,15 @@ class Step(Operator):
 
     def get_jacobi(self, parent) -> np.matrix:
         return np.mat(np.zeros(parent.dimensions()))
+
+class Logistic(Operator):
+    """apply a Logistic function to components of the vector"""
+
+    def compute(self):
+        assert len(self.parents) == 1
+
+        x = self.parents[0].value
+        self.value = np.mat(1.0 / (1.0 + np.power(np.e, np.where(-x > 1e2, 1e2, -x))))
+
+    def get_jacobi(self, parent) -> np.matrix:
+        return np.diag(np.mat(np.multiply(self.value, 1 - self.value)).A1)
