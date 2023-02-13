@@ -84,3 +84,25 @@ class Logistic(Operator):
 
     def get_jacobi(self, parent) -> np.matrix:
         return np.diag(np.mat(np.multiply(self.value, 1 - self.value)).A1)
+
+class SoftMax(Operator):
+    """Softmax function"""
+
+    # we will use this function in other place, so we set it as staticmethod
+    @staticmethod
+    def softmax(a):
+        a[a > 1e2] = 1e2 # prevent excessive exponent
+        ep = np.power(np.e, a)
+        return ep / np.sum(ep)
+
+    def compute(self):
+        self.value = SoftMax.softmax(self.parents[0].value)
+
+    def get_jacobi(self, parent):
+        """
+        we do not use the get_jacobi function of SoftMax node
+        we use CrossEntropyWithSoftMax instead when training
+        """   
+        raise NotImplementedError("Don't use SoftMax's get_jacobi")
+
+    
