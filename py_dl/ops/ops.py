@@ -73,6 +73,7 @@ class Step(Operator):
     def get_jacobi(self, parent) -> np.matrix:
         return np.mat(np.zeros(parent.dimensions()))
 
+
 class Logistic(Operator):
     """apply a Logistic function to components of the vector"""
 
@@ -80,10 +81,12 @@ class Logistic(Operator):
         assert len(self.parents) == 1
 
         x = self.parents[0].value
-        self.value = np.mat(1.0 / (1.0 + np.power(np.e, np.where(-x > 1e2, 1e2, -x))))
+        self.value = np.mat(
+            1.0 / (1.0 + np.power(np.e, np.where(-x > 1e2, 1e2, -x))))
 
     def get_jacobi(self, parent) -> np.matrix:
         return np.diag(np.mat(np.multiply(self.value, 1 - self.value)).A1)
+
 
 class SoftMax(Operator):
     """Softmax function"""
@@ -91,7 +94,7 @@ class SoftMax(Operator):
     # we will use this function in other place, so we set it as staticmethod
     @staticmethod
     def softmax(a):
-        a[a > 1e2] = 1e2 # prevent excessive exponent
+        a[a > 1e2] = 1e2  # prevent excessive exponent
         ep = np.power(np.e, a)
         return ep / np.sum(ep)
 
@@ -102,7 +105,18 @@ class SoftMax(Operator):
         """
         we do not use the get_jacobi function of SoftMax node
         we use CrossEntropyWithSoftMax instead when training
-        """   
+        """
         raise NotImplementedError("Don't use SoftMax's get_jacobi")
 
-    
+
+class ReLU(Operator):
+    """assign ReLU function to elements in the martrix"""
+
+    nslope = 0.1  # the slope of the negative axis
+
+    def compute(self) -> None:
+        self.value = np.mat(np.where(
+            self.parents[0].value > 0.0, self.parents[0].value, self.nslope * self.parents[0].value))
+
+    def get_jacobi(self, parent) -> np.matrix:
+        return np.diag(np.where(parent.value.A1 > 0.0, 1.0, self.nslope))
