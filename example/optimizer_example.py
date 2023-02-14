@@ -2,8 +2,7 @@
 Author: yitong 2969413251@qq.com
 Date: 2023-02-11 17:07:24
 '''
-import sys
-sys.path.append('..')
+
 import numpy as np
 import py_dl
 

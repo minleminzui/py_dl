@@ -2,8 +2,7 @@
 Author: yitong 2969413251@qq.com
 Date: 2023-02-13 15:45:49
 '''
-import sys
-sys.path.append('..')
+
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder

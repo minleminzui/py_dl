@@ -2,8 +2,7 @@
 Author: yitong 2969413251@qq.com
 Date: 2023-02-13 22:25:33
 '''
-import sys
-sys.path.append("..")
+
 from sklearn.datasets import make_circles
 import py_dl
 import numpy as np

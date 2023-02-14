@@ -6,8 +6,7 @@ import py_dl
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 import pandas as pd
 import numpy as np
-import sys
-sys.path.append('..')
+
 
 # read data as dataframe in pandas with dropping the Id column
 data = pd.read_csv("../data/Iris.csv").drop("Id", axis=1)
