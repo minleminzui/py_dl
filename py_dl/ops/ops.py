@@ -120,3 +120,61 @@ class ReLU(Operator):
 
     def get_jacobi(self, parent) -> np.matrix:
         return np.diag(np.where(parent.value.A1 > 0.0, 1.0, self.nslope))
+
+
+class Reshape(Operator):
+    """change the shape of the parent matrix"""
+
+    def __init__(self, *parent, **kargs) -> None:
+        Operator.__init__(self, *parent, **kargs)
+
+        self.to_shape = kargs.get('shape')
+        assert isinstance(self.to_shape, tuple)
+
+    def compute(self) -> None:
+        self.value = self.parents[0].value.reshape(self.to_shape)
+
+    def get_jacobi(self, parent) -> None:
+        assert parent is self.parents[0]
+
+        return np.mat(np.eye(self.dimension()))
+
+
+class Concat(Operator):
+    """concat multiple parents into a single vector"""
+
+    def compute(self):
+        assert len(self.parents) > 0
+
+        self.value = np.concatenate([p.value.flatten()
+                                    for p in self.parents], axis=1).T
+
+    def get_jacobi(self, parent):
+        assert parent in self.parents
+
+        dimensions = [p.dimension() for p in self.parents]
+        pos = self.parents.index(parent)
+
+        dimension = parent.dimension()
+
+        assert dimension == dimensions[pos]
+
+        jacobi = np.mat(np.zeros((self.dimension(), dimension)))
+        start_row = int(np.sum(dimensions[:pos]))
+        jacobi[start_row:start_row + dimension,
+               0:dimension] = np.eye(dimension)
+
+        return jacobi
+
+class Multiply(Operator):
+    """two parents matrices with the same shape, multiply in elementwise"""
+    
+    def compute(self) -> None:
+        assert self.parents[0].value.shape == self.parents[1].value.shape
+        self.value = np.multiply(self.parents[0].value, self.parents[1].value)
+    
+    def get_jacobi(self, parent) -> np.ndarray:
+        if parent is self.parents[0]:
+            return np.diag(self.parents[1].value.A1)
+        else:  
+            return np.diag(self.parents[0].value.A1)

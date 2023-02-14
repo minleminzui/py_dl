@@ -11,6 +11,7 @@ class Graph:
 
     def __init__(self) -> None:
         self.nodes = []  # the list of nodes in the computation graph class
+        self.name_scope = None
 
     def add_node(self, node) -> None:
         """add nodes"""
@@ -26,6 +27,8 @@ class Graph:
         for node in self.nodes:
             # every nodes only reset their own values
             node.reset_value(False)
+    def node_count(self) -> int:
+        return len(self.nodes)
 
     def draw(self, ax=None) -> None:
         """draw computation graph visually"""

@@ -3,7 +3,7 @@ Author: yitong 2969413251@qq.com
 Date: 2023-02-09 14:22:04
 '''
 import sys
-sys.path.append('..')
+sys.path.append('.')
 import numpy as np
 import py_dl
 

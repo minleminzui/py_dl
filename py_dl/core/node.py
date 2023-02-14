@@ -13,13 +13,17 @@ class Node(abc.ABC):
 
     """computation graph node class base class"""
 
-    def __init__(self, *parents) -> None:
-        self.parents = parents  # the list of parent nodes
+    def __init__(self, *parents, **kargs) -> None:
+        self.kargs = kargs
+        self.graph = kargs.get('graph', default_graph)  # default_graph is the default global computation graph
+        self.need_save = kargs.get('need_save', True)  # used for identifying ?
+        self.gen_node_name(**kargs)
+
+        # why we should convert it into tuple ?
+        self.parents = list(parents)  # the list of parent nodes
         self.children = []  # the list of children nodes
         self.value = None  # the value of this node
         self.jacobi = None  # the jacobi matrix for this node of the result node
-        self.graph = default_graph  # default_graph is the default global computation graph
-
         # add this node to the children list of its parent node
         for parent in self.parents:
             parent.children.append(self)

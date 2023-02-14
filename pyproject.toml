@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "py-dl"
+version = "0.1.0"
+description = "A learning project about deep learning framework referring to matrixslow and needle"
+authors = ["yitong <2969413251@qq.com>"]
+readme = "README.md"
+packages = [{include = "py_dl"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+numpy = "^1.24.2"
+scikit-learn = "^1.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "douban"
+url = "https://pypi.doubanio.com/simple"
+default = true
