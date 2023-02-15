@@ -13,3 +13,4 @@ A learning project about deep learning framework referring to matrixslow and nee
 - [matrix derivative](https://zhuanlan.zhihu.com/p/263777564)
 - [A1 flatten ravel](https://blog.csdn.net/qq_45100273/article/details/104729269)
 - [@ * np.dot() np.multiply() np.matmul()](https://www.cnblogs.com/ssyfj/p/12913015.html)
+- [embedding](https://blog.csdn.net/hit0803107/article/details/98377030)
