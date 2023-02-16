@@ -166,15 +166,39 @@ class Concat(Operator):
 
         return jacobi
 
+
 class Multiply(Operator):
     """two parents matrices with the same shape, multiply in elementwise"""
-    
+
     def compute(self) -> None:
         assert self.parents[0].value.shape == self.parents[1].value.shape
         self.value = np.multiply(self.parents[0].value, self.parents[1].value)
-    
+
     def get_jacobi(self, parent) -> np.ndarray:
         if parent is self.parents[0]:
             return np.diag(self.parents[1].value.A1)
-        else:  
+        else:
             return np.diag(self.parents[0].value.A1)
+
+
+class Welding(Operator):
+
+    def compute(self) -> None:
+        assert len(self.parents) == 1 and self.parents[0] is not None
+
+        self.value = self.parents[0].value
+
+    def get_jacobi(self, parent) -> np.matrix:
+        assert parent is self.parents[0]
+        return np.mat(np.eye(self.dimension()))
+
+    def weld(self, node):
+        """weld this node to the input node"""
+        if len(self.parents) == 1 and self.parents[0] is not None:
+            self.parents[0].children.remove(self)
+
+        self.parents.clear()
+
+        # weld
+        self.parents.append(node)
+        node.children.append(self)
