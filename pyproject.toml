@@ -10,6 +10,7 @@ packages = [{include = "py_dl"}]
 python = "^3.8"
 numpy = "^1.24.2"
 scikit-learn = "^1.1.0"
+pandas = "^1.5.3"
 
 [build-system]
 requires = ["poetry-core"]
