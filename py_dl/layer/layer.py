@@ -1,3 +1,7 @@
+'''
+Author: yitong 2969413251@qq.com
+Date: 2023-02-17 15:51:17
+'''
 from ..core import *
 from ..ops import *
 
@@ -18,6 +22,45 @@ def fc(input, input_size, size, activation) -> Operator:
     if activation == "ReLU":
         return ReLU(affine)
     elif activation == "Logistic":
+
         return Logistic(affine)
     else:
         return affine
+
+
+def conv(feature_maps, input_shape, kernels, kernel_shape, activation):
+    """
+    :param feature_maps: list of feature maps, they are matrices with the same shape
+    :param kernels: tuple, width and height of feature map
+    :param kernels: interger, the number of convolution kernel
+    :param kernel_shape: tuple, the shape of kernel (width and height)
+    :param activation: the activation function
+    :return: array, include many featrue maps
+    """
+    # ones matrix with the same shape as the input matrix
+    ones = Variable(input_shape, init=False, trainable=False)
+    ones.set_value(np.mat(np.ones(input_shape)))
+
+    outputs = []
+    for _ in range(kernels):
+        channels = []
+
+        for fm in feature_maps:
+            kernel = Variable(kernel_shape, init=True, trainable=True)
+            conv = Convolve(fm, kernel)
+            channels.append(conv)
+
+        channels = Add(*channels)
+        bias = ScalarMultiply(
+            (Variable((1, 1), init=True, trainable=True)), ones)
+        affine = Add(channels, bias)
+
+        if activation == "ReLU":
+            outputs.append(ReLU(affine))
+        elif activation == "Logistic":
+            outputs.append(Logistic(affine))
+        else:
+            outputs.append(affine)
+
+    assert len(outputs) == kernels
+    return outputs

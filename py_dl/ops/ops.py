@@ -263,3 +263,21 @@ class Convolve(Operator):
                     jacobi.append(
                         self.padded[i - hkw:i - hkw + kw, j - hkh:j - hkh + kh].A1)
         return np.mat(jacobi)
+
+
+class ScalarMultiply(Operator):
+    """multiply a matrix with a scalar"""
+
+    def compute(self) -> None:
+        assert self.parents[0].shape() == (
+            1, 1)  # the first parent is a scalar
+        self.value = np.multiply(self.parents[0].value, self.parents[1].value)
+
+    def get_jacobi(self, parent) -> np.matrix:
+        assert parent in self.parents
+
+        if parent is self.parents[0]:
+            # numerator layout
+            return self.parents[1].value.flatten().T
+        else:
+            return np.mat(np.eye(self.parents[1].dimension())) * self.parents[0].value[0, 0]
