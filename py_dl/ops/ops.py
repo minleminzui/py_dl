@@ -202,3 +202,64 @@ class Welding(Operator):
         # weld
         self.parents.append(node)
         node.children.append(self)
+
+
+class Convolve(Operator):
+    """treat the second parent as a filter, we take a two-dimensional discrete convolution of the first parent node"""
+
+    def __init__(self, *parents, **kargs) -> None:
+        assert len(parents) == 2
+        Operator.__init__(self, *parents, **kargs)
+
+        self.padded = None
+
+    def compute(self):
+
+        data = self.parents[0].value  # picture
+        kernel = self.parents[1].value  # kernel
+
+        w, h = data.shape  # width, height of the picture
+        kw, kh = kernel.shape  # width, height of the kernel
+
+        # the half of the width, height of the kernel
+        hkw, hkh = int(kw / 2), int(kh / 2)
+        # padding, so the kernel is a 'same kernel'
+        pw, ph = tuple(np.add(data.shape, np.multiply((hkw, hkh), 2)))
+
+        self.padded = np.mat(np.zeros((pw, ph)))
+        self.padded[hkw:hkw + w, hkh:hkh + h] = data
+
+        self.value = np.mat(np.zeros((w, h)))
+
+        for i in np.arange(hkw, hkw + w):
+            for j in np.arange(hkh, hkh + h):
+                self.value[i - hkw, j - hkh] = np.sum(np.multiply(
+                    self.padded[i - hkw:i - hkw + kw, j - hkh:j - hkh + kh], kernel))
+
+    def get_jacobi(self, parent) -> np.matrix:
+
+        assert len(self.parents) == 2
+
+        data = self.parents[0].value  # picture
+        kernel = self.parents[1].value  # kernel
+
+        w, h = data.shape  # the width and height of picture
+        kw, kh = kernel.shape  # the width and height of kernel
+        hkw, hkh = int(kw / 2), int(kh / 2)
+
+        pw, ph = tuple(np.add(data.shape, np.multiply((hkw, hkh), 2)))
+
+        jacobi = []
+        if parent is self.parents[0]:
+            # some addition derivative and the multiplication derivative
+            for i in np.arange(hkw, hkw + w):
+                for j in np.arange(hkh, hkh + h):
+                    mask = np.mat(np.zeros((pw, ph)))
+                    mask[i - hkw:i - hkw + kw, j - hkh:j - hkh + kh] = kernel
+                    jacobi.append(mask[hkw:hkw + w, hkh:hkh + h].A1)
+        else:
+            for i in np.arange(hkw, hkw + w):
+                for j in np.arange(hkh, hkh + h):
+                    jacobi.append(
+                        self.padded[i - hkw:i - hkw + kw, j - hkh:j - hkh + kh].A1)
+        return np.mat(jacobi)
