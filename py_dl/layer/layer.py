@@ -31,7 +31,7 @@ def fc(input, input_size, size, activation) -> Operator:
 def conv(feature_maps, input_shape, kernels, kernel_shape, activation):
     """
     :param feature_maps: list of feature maps, they are matrices with the same shape
-    :param kernels: tuple, width and height of feature map
+    :param input_shape: tuple, width and height of feature map
     :param kernels: interger, the number of convolution kernel
     :param kernel_shape: tuple, the shape of kernel (width and height)
     :param activation: the activation function
@@ -69,6 +69,7 @@ def conv(feature_maps, input_shape, kernels, kernel_shape, activation):
 def pooling(feature_maps, kernel_shape, stride):
     """
     :param feature_maps: array, include serveral intput feature maps, matrices with the same shape
+    :param kernel_shape: tuple, the width and the height of the pooling kernel 
     :param stride: tuple, include horizontal and vertical stride 
     :return: array, include serveral output feature maps, matrices with the same shape
     """
