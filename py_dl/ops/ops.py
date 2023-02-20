@@ -281,3 +281,58 @@ class ScalarMultiply(Operator):
             return self.parents[1].value.flatten().T
         else:
             return np.mat(np.eye(self.parents[1].dimension())) * self.parents[0].value[0, 0]
+
+
+class MaxPooling(Operator):
+    """max pooling operator"""
+
+    def __init__(self, *parent, **kargs):
+        Operator.__init__(self, *parent, **kargs)
+
+        self.stride = kargs.get('stride')
+        assert isinstance(self.stride, tuple) and len(self.stride) == 2
+
+        self.size = kargs.get('size')
+        assert isinstance(self.size, tuple) and len(self.size) == 2
+
+        self.flag = None
+
+    def compute(self) -> None:
+        data = self.parents[0].value  # the input feature maps
+        w, h = data.shape  # the width, height of input feature maps
+        dim = w * h
+        sw, sh = self.stride
+        kw, kh = self.size  # the size of the pooling kernel
+        # the half of the width and height of the pooling kernel
+        hkw, hkh = int(kw / 2), int(kh / 2)
+
+        result = []
+        flag = []
+
+        for i in np.arange(0, w, sw):
+            row = []
+            for j in np.arange(0, h, sh):
+                # set the boundaries of pooling kernel
+                top, bottom = max(0, i - hkw), min(w, i + hkw + 1)
+                left, right = max(0, j - hkh), min(h, j + hkh + 1)
+                window = data[top:bottom, left:right]
+                row.append(np.max(window))
+
+                # record the position of the maximum in the original feature map
+                pos = np.argmax(window)
+
+                w_width = right - left
+                offset_w, offset_h = top + pos // w_width, left + pos % w_width
+                offset = offset_w * w + offset_h
+                tmp = np.zeros(dim)
+                tmp[offset] = 1
+                flag.append(tmp)
+
+            result.append(row)
+
+        self.flag = np.mat(flag)
+        self.value = np.mat(result)
+    def get_jacobi(self, parent):
+        assert parent is self.parents[0] and self.jacobi is not None
+        return self.flag
+    

@@ -64,3 +64,17 @@ def conv(feature_maps, input_shape, kernels, kernel_shape, activation):
 
     assert len(outputs) == kernels
     return outputs
+
+
+def pooling(feature_maps, kernel_shape, stride):
+    """
+    :param feature_maps: array, include serveral intput feature maps, matrices with the same shape
+    :param stride: tuple, include horizontal and vertical stride 
+    :return: array, include serveral output feature maps, matrices with the same shape
+    """
+
+    outputs = []
+    for fm in feature_maps:
+        outputs.append(MaxPooling(fm, size=kernel_shape, stride=stride))
+
+    return outputs
