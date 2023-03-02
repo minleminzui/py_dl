@@ -4,6 +4,14 @@
 -->
 # py_dl
 A learning project about deep learning framework referring to matrixslow and needle
+# build && run (have a try)
+you should have installed [poetry](https://github.com/python-poetry/poetry), I use poetry for dependency management, there is an example
+```
+poetry update --lock && poetry install
+poetry run python example/sobel.py
+```
+We can get Mondrian's work processed by a longitudinal Sobel filter, by a transverse Sobel filter, and by both simultaneously
+![After being processed](img/sobel_output.png)
 # code statistics
 use [tokei](https://github.com/XAMPPRocky/tokei) to get code statistics
 ```bash
@@ -18,6 +26,10 @@ use [tokei](https://github.com/XAMPPRocky/tokei) to get code statistics
  Total                  34         2730         1747          205          778
 ===============================================================================
 ```
+# to_do
+- lstm operator
+- grpc network serving
+- Distributed training
 # reference
 - [matrixslow](https://github.com/zc911/MatrixSlow)
 - [needle](https://github.com/dlsyscourse)
